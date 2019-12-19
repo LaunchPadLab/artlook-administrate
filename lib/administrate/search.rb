@@ -73,6 +73,7 @@ module Administrate
         Administrate::Field::BelongsTo,
         Administrate::Field::HasMany,
         Administrate::Field::HasOne,
+        BelongsToScoped,
       ].include?(attribute_types[attribute].deferred_class)
     end
 
