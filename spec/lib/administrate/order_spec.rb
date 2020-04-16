@@ -70,6 +70,16 @@ describe Administrate::Order do
     end
 
     context "when relation has belongs_to association" do
+      it "namespaces attribute with relation table" do
+        order = Administrate::Order.new(:name)
+        relation = relation_with_association(:belongs_to)
+        allow(relation).to receive(:reorder).and_return(relation)
+
+        ordered = order.apply(relation)
+
+        expect(relation).to have_received(:reorder).with("table_name.name_id asc")
+      end
+
       it "orders by id" do
         order = Administrate::Order.new(:name)
         relation = relation_with_association(:belongs_to)
@@ -77,7 +87,6 @@ describe Administrate::Order do
 
         ordered = order.apply(relation)
 
-        expect(relation).to have_received(:reorder).with("name_id asc")
         expect(ordered).to eq(relation)
       end
     end
@@ -178,6 +187,7 @@ describe Administrate::Order do
   def relation_with_association(association)
     double(
       klass: double(reflect_on_association: double(macro: association)),
+      table_name: "table_name",
     )
   end
 end
