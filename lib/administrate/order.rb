@@ -64,6 +64,7 @@ module Administrate
     end
 
     def order_by_id(relation)
+      # LPL: Explicitly include table to mitigate ambiguity
       relation.reorder("#{relation.table_name}.#{attribute}_id #{direction}")
     end
 
