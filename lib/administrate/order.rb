@@ -2,7 +2,7 @@ module Administrate
   class Order
     def initialize(attribute = nil, direction = nil)
       @attribute = attribute
-      @direction = direction || :asc
+      @direction = sanitize_direction(direction) || :asc
     end
 
     def apply(relation)
@@ -34,6 +34,13 @@ module Administrate
 
     attr_reader :attribute
 
+    # Added from v0.13.0 to prevent SQL injection
+    # https://github.com/thoughtbot/administrate/security/advisories/GHSA-2p5p-m353-833w
+    def sanitize_direction(direction)
+      return unless %w[asc desc].include?(direction.to_s)
+      direction.to_sym
+    end
+
     def reversed_direction_param_for(attr)
       if ordered_by?(attr)
         opposite_direction
@@ -43,7 +50,7 @@ module Administrate
     end
 
     def opposite_direction
-      direction.to_sym == :asc ? :desc : :asc
+      direction == :asc ? :desc : :asc
     end
 
     def order_by_association(relation)
